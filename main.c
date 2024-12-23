@@ -58,8 +58,5 @@ int main(void)
     }
 
     printf("Heoolll\n");
-    //do_move(&stateBoard, 2, X);
-    //do_move(&stateBoard, 2, X);
-    //undo_move(&stateBoard, 2);
     return 0;
 }

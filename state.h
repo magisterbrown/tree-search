@@ -1,3 +1,4 @@
+#include <stdio.h>
 #define WIDTH 4
 #define HEIGHT 3
 
@@ -12,6 +13,8 @@ typedef enum Piece: unsigned char {
 typedef struct Field {
     Piece board[WIDTH*HEIGHT];
 } Field;
+
+#define get_cell(x,y,field) (field)->board[y*WIDTH+x]
 
 typedef struct TreeNode {
     int depth;
@@ -57,4 +60,3 @@ void print_field(Field *curr)
     }
 }
 
-#define empty_field()
