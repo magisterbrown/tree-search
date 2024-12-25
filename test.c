@@ -3,6 +3,7 @@
 #define INAROW 3
 
 #define min(a,b) ((a)<(b) ? (a) : (b))
+#define max(a,b) ((a)>(b) ? (a) : (b))
 
 Piece winner(Field *board);
 Piece check_line(Field *board, int xst, int yst, int dx, int dy);
@@ -111,6 +112,31 @@ int main(void)
     //Eval test
 
 }       
+int check_line_eval(Field *board, int xst, int yst, int dx, int dy, Piece pic) {
+    int best_full = 0;
+
+    int fullrow = 0;
+    int emprow = 0;
+
+    while(1) {
+        if(xst<0 || xst>=WIDTH || yst<0 || yst>=HEIGHT)
+            return NO_PIECE;
+        Piece nf = get_cell(xst, yst, board);
+        if(nf == pic) 
+            fullrow, emprow = 0;
+        int match = nf == flip(pic); 
+        fullrow = (fullrow+match)*match;
+
+        int rowmatch = match || nf == NO_PIECE; 
+        emprow = (emprow+rowmatch)*rowmatch;
+
+        xst+=dx;
+        yst+=dy;
+        if(emprow>=INAROW){
+            best_full = max(best_full, fullrow);
+        }
+    }
+}
 Piece check_line(Field *board, int xst, int yst, int dx, int dy) {
     Piece f = NO_PIECE;
     int crow = 0;
