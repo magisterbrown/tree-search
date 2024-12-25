@@ -5,6 +5,7 @@
 #define min(a,b) ((a)<(b) ? (a) : (b))
 
 Piece winner(Field *board);
+Piece check_line(Field *board, int xst, int yst, int dx, int dy);
 int main(void)
 {
     Field stateBoard1 = {.board={
@@ -28,6 +29,17 @@ int main(void)
     printf("Full %d\n", full);
     print_field(&stateBoard1);
 
+    printf("\n");
+    Piece wn = winner(&stateBoard1);
+    if(wn==X) 
+        printf("x winner");
+    else if(wn==Y) 
+        printf("y winner");
+    else 
+        printf("no winner");
+    printf("\n");
+    print_field(&stateBoard1);
+
     //Done test
     Field stateBoard2 = {.board={
         NO_PIECE, NO_PIECE, Y       , NO_PIECE,
@@ -35,7 +47,7 @@ int main(void)
         X       , Y       , Y       , NO_PIECE,
     }};
     printf("\n");
-    Piece wn = winner(&stateBoard2);
+    wn = winner(&stateBoard2);
     if(wn==X) 
         printf("x winner");
     else if(wn==Y) 
@@ -99,87 +111,57 @@ int main(void)
     //Eval test
 
 }       
-
+Piece check_line(Field *board, int xst, int yst, int dx, int dy) {
+    Piece f = NO_PIECE;
+    int crow = 0;
+    while(1) {
+        if(xst<0 || xst>=WIDTH || yst<0 || yst>=HEIGHT)
+            return NO_PIECE;
+        Piece nf = get_cell(xst, yst, board);
+        int match = f == nf; 
+        crow = nf==NO_PIECE ? 0 : (crow+match)*match;
+        f = nf;
+        xst+=dx;
+        yst+=dy;
+        if(crow+1 == INAROW)
+            return f;
+    }
+}
 Piece winner(Field *board_field) {
 
     for(int i=0;i<WIDTH;i++) {
-        int crow = 0;
-        Piece f = NO_PIECE;
-        for(int j=0;j<HEIGHT;j++) {
-           Piece nf = get_cell(i, j, board_field);
-           int match = f == nf; 
-           crow = nf==NO_PIECE ? 0 : (crow+match)*match;
-           f = nf;
-           if(crow+1 == INAROW)
-               return f;
-        }
+        Piece res = check_line(board_field, i, 0, 0, 1);
+        if(res)
+            return res;
     }
 
     for(int i=0;i<HEIGHT;i++) {
-        int crow = 0;
-        Piece f = NO_PIECE;
-        for(int j=0;j<WIDTH;j++) {
-           Piece nf = get_cell(j, i, board_field);
-           int match = f == nf; 
-           crow = nf==NO_PIECE ? 0 : (crow+match)*match;
-           f = nf;
-           if(crow+1 == INAROW)
-               return f;
-        }
+        Piece res = check_line(board_field, 0, i, 1, 0);
+        if(res)
+            return res;
     }
 
     for(int i=0;i<HEIGHT;i++) {
-        int crow = 0;
-        Piece f = NO_PIECE;
-        for(int j=0;j<min(HEIGHT-i, WIDTH);j++) {
-            Piece nf = get_cell(j, i+j, board_field);
-            int match = f == nf && f != NO_PIECE; 
-            int crow = (crow+match)*match;
-            f = nf;
-            if(crow+1 == INAROW)
-                return f;
-        }
+        Piece res = check_line(board_field, 0, i, 1, 1);
+        if(res)
+            return res;
     }
     for(int i=1;i<WIDTH;i++) {
-        int crow = 0;
-        Piece f = NO_PIECE;
-        for(int j=0;j<min(HEIGHT, WIDTH-i);j++) {
-            Piece nf = get_cell(j, i+j, board_field);
-            int match = f == nf && f != NO_PIECE; 
-            int crow = (crow+match)*match;
-            f = nf;
-            if(crow+1 == INAROW)
-                return f;
-        }
+        Piece res = check_line(board_field, i, 0, 1, 1);
+        if(res)
+            return res;
     }
 
     for(int i=0;i<HEIGHT;i++) {
-        int crow = 0;
-        Piece f = NO_PIECE;
-        int stx = WIDTH-1;
-        int sty = i;
-        for(int j=0;j<min(HEIGHT-sty, WIDTH);j++) {
-            Piece nf = get_cell(stx-j, sty+j, board_field);
-            int match = f == nf && f != NO_PIECE; 
-            int crow = (crow+match)*match;
-            f = nf;
-            if(crow+1 == INAROW)
-                return f;
-        }
+        Piece res = check_line(board_field, WIDTH-1, i, -1, 1);
+        if(res)
+            return res;
     }
-    for(int i=1;i<WIDTH;i++) {
-        int crow = 0;
-        Piece f = NO_PIECE;
-        int stx = i;
-        int sty = 0;
-        for(int j=0;j<min(HEIGHT, stx+1);j++) {
-            Piece nf = get_cell(stx-j, sty+j, board_field);
-            int match = f == nf && f != NO_PIECE; 
-            int crow = (crow+match)*match;
-            f = nf;
-            if(crow+1 == INAROW)
-                return f;
-        }
+    for(int i=0;i<WIDTH-1;i++) {
+        Piece res = check_line(board_field, i, 0, -1, 1);
+        if(res)
+            return res;
     }
+    return NO_PIECE;
 
 }
