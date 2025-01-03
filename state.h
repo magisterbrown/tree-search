@@ -14,6 +14,14 @@ typedef struct Field {
     Piece board[WIDTH*HEIGHT];
 } Field;
 
+typedef struct LField {
+    int width;
+    int height;
+    Piece board[];
+} LField;
+#define create_lfield(width, height) memcpy(calloc(1,sizeof(LField)+width*height),&(LField){width,height}, sizeof(LField));
+
+
 #define get_cell(x,y,field) (field)->board[y*WIDTH+x]
 
 typedef struct TreeNode {
