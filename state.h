@@ -20,8 +20,6 @@ typedef struct LField {
     Piece board[];
 } LField;
 #define create_lfield(width, height) memcpy(calloc(1,sizeof(LField)+width*height),&(LField){width,height}, sizeof(LField));
-
-
 #define get_cell(x,y,field) (field)->board[y*WIDTH+x]
 
 typedef struct TreeNode {
@@ -31,6 +29,16 @@ typedef struct TreeNode {
     struct TreeNode *parrent;
     struct TreeNode *children[WIDTH];
 } TreeNode;
+
+typedef struct{
+    unsigned int x;
+    unsigned int y;
+    int dx;
+    int dy;
+} PointVec;
+
+int check_line_done(LField *board, PointVec pv, Piece pic);
+int check_line_eval(LField *board, PointVec pv, Piece pic, int full_len);
 
 void do_move(Field *curr, int col, Piece fig) 
 {
