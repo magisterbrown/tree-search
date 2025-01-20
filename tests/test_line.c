@@ -6,37 +6,6 @@
 #include <stdlib.h>
 
 
-int check_line_done(LField *board, PointVec pv, Piece pic) 
-{
-    int xc = pv.x;
-    int yc = pv.y;
-    int latest, longest = 0;
-    while(xc<board->width && yc<board->height) {
-        int eq = get_cell(xc, yc, board) == pic;
-        latest = (latest*eq)+eq;
-        longest = latest>longest ? latest : longest;
-        xc+=pv.dx;
-        yc+=pv.dy;
-    }
-    return longest;
-}
-int check_line_eval(LField *board, PointVec pv, Piece pic, int full_len) 
-{
-    int xc = pv.x;
-    int yc = pv.y;
-    int latest, longest, lfinishable = 0;
-    while(xc<board->width && yc<board->height) {
-        int eq = get_cell(xc, yc, board) == pic;
-        int matching = eq || get_cell(xc, yc, board) == NO_PIECE;
-        latest = (latest*matching)+eq;
-        lfinishable=(lfinishable*matching)+matching;
-        if(lfinishable>=full_len)
-            longest = latest>longest ? latest : longest;
-        xc+=pv.dx;
-        yc+=pv.dy;
-    }
-    return longest;
-}
 
 #define WIDTH_TEST 30
 void test_eval() 
@@ -53,7 +22,12 @@ void test_eval()
         get_cell(i,0,lf) = rann ? X : NO_PIECE;
     }
     int res = check_line_eval(lf, (PointVec){0, 0, 1, 0}, X, 4);
-    assert(res == ct);
+    if(res!=ct) {
+        printf("Real: %d\n", ct);
+        printf("Conunted: %d\n", res);
+        print_field(lf);
+        assert(0);
+    }
 }
 void test_done() 
 {
@@ -68,8 +42,7 @@ void test_done()
     free(lf);
 }
 int main(void) {
-    //test_done();
-    //test_eval();
-    //lfn = create_lfield(4,4);
+    test_eval();
+    test_done();
     return 0;
 }

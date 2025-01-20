@@ -1,16 +1,19 @@
-all: build
+BASED_COMPILE := gcc -ggdb -o run 
+SRC := checker.c mover.c
+#TESTS := $(wildcard tests/*)
+TESTS := tests/test_tree.c
+THEFT := -Itheft/inc -Ltheft/build -ltheft
+
+all: build 
 	./run
+
+debug: build
+	gdb ./run
+
+grind: build
+	valgrind ./run
 build:
-	gcc -ggdb -o run main.c
+	$(BASED_COMPILE) $(SRC) $(TESTS) -I . $(THEFT)
 
-test:
-	gcc -ggdb -o run test.c && ./run
 
-test1:
-	gcc -o run tests/test_line.c -I . && ./run
-
-test1g:
-	gcc -ggdb -o run tests/test_line.c -I . && gdb ./run
-
-test1v:
-	gcc -ggdb -o run tests/test_line.c -I . && valgrind ./run
+.PHONY: all build

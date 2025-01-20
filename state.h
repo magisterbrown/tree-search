@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #define WIDTH 4
 #define HEIGHT 3
 
@@ -10,25 +12,14 @@ typedef enum Piece: unsigned char {
 
 #define flip(fig) fig == X ? Y : X
 
-typedef struct Field {
-    Piece board[WIDTH*HEIGHT];
-} Field;
-
 typedef struct LField {
     int width;
     int height;
     Piece board[];
 } LField;
 #define create_lfield(width, height) memcpy(calloc(1,sizeof(LField)+width*height),&(LField){width,height}, sizeof(LField));
-#define get_cell(x,y,field) (field)->board[y*WIDTH+x]
+#define get_cell(x,y,field) (field)->board[y*(field->width)+x]
 
-typedef struct TreeNode {
-    int depth;
-    int move;
-    Piece fig;
-    struct TreeNode *parrent;
-    struct TreeNode *children[WIDTH];
-} TreeNode;
 
 typedef struct{
     unsigned int x;
@@ -40,39 +31,6 @@ typedef struct{
 int check_line_done(LField *board, PointVec pv, Piece pic);
 int check_line_eval(LField *board, PointVec pv, Piece pic, int full_len);
 
-void do_move(Field *curr, int col, Piece fig) 
-{
-   for(int y=HEIGHT-1;y>=0;y--) {
-        if(curr->board[y*WIDTH+col] == NO_PIECE) {
-            curr->board[y*WIDTH+col] = fig;
-            break;
-        }
-   }
-}
-
-void undo_move(Field *curr, int col) 
-{
-    for(int y=0;y<HEIGHT;y++) {
-        if(curr->board[y*WIDTH+col] != NO_PIECE) {
-            curr->board[y*WIDTH+col] = NO_PIECE;
-            break;
-        }
-    }
-}
-
-void print_field(Field *curr) 
-{
-    for(int y=0;y<HEIGHT;y++) {
-        for(int x=0;x<WIDTH;x++) {
-            switch(curr->board[y*WIDTH+x]) {
-                case NO_PIECE: printf("0");break;
-                case X:        printf("x");break;
-                case Y:        printf("y");break;
-            }
-            if(x!=WIDTH-1)
-                printf(" ");
-        }
-        printf("\n");
-    }
-}
-
+void do_move(LField *curr, int col, Piece fig);
+void undo_move(LField *curr, int col); 
+void print_field(LField *curr); 

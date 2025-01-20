@@ -1,5 +1,6 @@
 set confirm off
 source printer.py
-b check_line_eval
+b main
+b 23
 r
 #n
