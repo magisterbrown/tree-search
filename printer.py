@@ -24,6 +24,7 @@ class TreePrinter(gdb.ValuePrinter):
         self.state = state
         self.val = state["state_value"]
         self.n_children = 5
+        self.fig = state["fig"]
 
     def to_string(self):
         if(self.state["parrent"] == 0):
@@ -33,11 +34,11 @@ class TreePrinter(gdb.ValuePrinter):
         childs=list()
         for i in range(self.n_children):
             if self.state["children"][i]==0:
-                childs.append( "null")
+                childs.append("null")
             else:
                 childs.append(float(self.state["children"][i].referenced_value()["state_value"]))
         
-        return "\n Parrent: {} <- Value: {} Children: {}".format(par, self.val, childs)
+        return "\n Parrent: {} <- Idx: {} Value: {} Fig: {} Children: {}".format(par,int(self.state["idx"]), self.val, self.fig , childs)
 
 
 

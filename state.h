@@ -30,6 +30,8 @@ typedef struct{
 
 int check_line_done(LField *board, PointVec pv, Piece pic);
 int check_line_eval(LField *board, PointVec pv, Piece pic, int full_len);
+int field_done(LField *lf, Piece fig, int ln);
+int field_eval(LField *lf, int ln);
 
 void do_move(LField *curr, int col, Piece fig);
 void undo_move(LField *curr, int col); 

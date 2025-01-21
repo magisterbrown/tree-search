@@ -32,3 +32,51 @@ int check_line_eval(LField *board, PointVec pv, Piece pic, int full_len)
     }
     return longest;
 }
+
+int field_done(LField *lf, Piece fig, int ln)
+{
+    int done = 0;
+    for(int x=0;x<lf->width;x++) {
+       done |= check_line_done(lf, (PointVec){x, 0, 0, 1},  fig) >= ln; 
+       done |= check_line_done(lf, (PointVec){x, 0, 1, 1},  fig) >= ln; 
+       done |= check_line_done(lf, (PointVec){x, 0, -1, 1}, fig) >= ln; 
+       if(done)
+           return 1;
+    }
+    for(int y=0;y<lf->height;y++) {
+       done |= check_line_done(lf, (PointVec){0, y, 1, 0},            fig) >= ln; 
+       done |= check_line_done(lf, (PointVec){0, y, 1, 1},            fig) >= ln; 
+       done |= check_line_done(lf, (PointVec){lf->width-1, y, -1, 1}, fig) >= ln; 
+       if(done)
+           return 1;
+    }
+    return 0;
+}
+
+//int field_eval(LField *lf, int ln)
+//{
+//    int max_x = 0;
+//    int max_y = 0;
+//    Piece figs[2] = {X, Y};
+//    int maxr[2] = {0, 0};
+//    int tmp
+//    for(int i=0;i<2;i++) { 
+//        for(int x=0;x<lf->width;x++) {
+//            tmp = check_line_eval(lf, {x, 0, 0, 1}, figs[i], ln);
+//            maxr[i] = maxr[i] < tmp ? tmp : maxr[i];     
+//            tmp = check_line_eval(lf, {x, 0, 1, 1}, figs[i], ln);
+//            maxr[i] = maxr[i] < tmp ? tmp : maxr[i];     
+//            tmp = check_line_eval(lf, {x, 0, -1, 1}, figs[i], ln);
+//            maxr[i] = maxr[i] < tmp ? tmp : maxr[i];     
+//        }
+//        for(int y=0;y<lf->height;y++) {
+//            tmp = check_line_eval(lf, {0, y, 0, 1}, figs[i], ln);
+//            maxr[i] = maxr[i] < tmp ? tmp : maxr[i];     
+//            tmp = check_line_eval(lf, {0, y, 1, 1}, figs[i], ln);
+//            maxr[i] = maxr[i] < tmp ? tmp : maxr[i];     
+//            tmp = check_line_eval(lf, {lf->width-1, y, -1, 1}, figs[i], ln);
+//            maxr[i] = maxr[i] < tmp ? tmp : maxr[i];     
+//        }
+//    }
+//    return maxr[0]-maxr[1];
+//}

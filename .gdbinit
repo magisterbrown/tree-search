@@ -1,8 +1,14 @@
 set confirm off
 source printer.py
-b stopper
-#b 29
+b main 
 r
-n
-p *root
+#b stopper
+#b 29
+#r
+#n
+#b 
+#del 1
+#display *curr
+#display *lf
+
 #n
