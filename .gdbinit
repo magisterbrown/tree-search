@@ -1,6 +1,8 @@
 set confirm off
 source printer.py
-b main
-b 23
+b stopper
+#b 29
 r
+n
+p *root
 #n

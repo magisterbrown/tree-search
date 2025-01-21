@@ -19,18 +19,33 @@ class FieldPrinter(gdb.ValuePrinter):
 
         return "\n Width: {} Height: {} {}".format(self._val["width"], self._val["height"], field)
 
-    def display_hint(self):
-        return 'hint'
+class TreePrinter(gdb.ValuePrinter):
+    def __init__(self, state):
+        self.state = state
+        self.val = state["state_value"]
+        self.n_children = 5
 
-def str_lookup_function(val):
-    print("LOOOK")
-    return None
+    def to_string(self):
+        if(self.state["parrent"] == 0):
+            par = "null"
+        else:
+            par = self.state["parrent"].dereference()["state_value"]
+        childs=list()
+        for i in range(self.n_children):
+            if self.state["children"][i]==0:
+                childs.append( "null")
+            else:
+                childs.append(float(self.state["children"][i].referenced_value()["state_value"]))
+        
+        return "\n Parrent: {} <- Value: {} Children: {}".format(par, self.val, childs)
+
 
 
 def build_pretty_printer():
     pp = gdb.printing.RegexpCollectionPrettyPrinter(
         "microfield")
     pp.add_printer('LField', '^LField$', FieldPrinter)
+    pp.add_printer('tree', '^TreeNode$', TreePrinter)
     return pp
 
 import gdb.printing

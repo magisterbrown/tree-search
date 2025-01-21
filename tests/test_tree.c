@@ -1,5 +1,5 @@
 #include "state.h"
-#include <math.h>
+#define NAN 0.0/0.0
 
 typedef struct {
     int n_cols;
@@ -7,53 +7,62 @@ typedef struct {
 } SearchConfig;
 
 typedef struct TreeNode {
-    float value;
+    float state_value;
     struct TreeNode *parrent;
     struct TreeNode *children[];
 } TreeNode;
 
+void stopper() {};
+
 float *search(float res[], LField *lf, int max_depth, Piece pic) {
     int n_cols = lf->width;
     TreeNode *root = malloc(sizeof(TreeNode)+sizeof(TreeNode*)*n_cols);
-    root->value = NAN;
+    root->state_value = NAN;
     TreeNode *curr = root;
-
+    int move_stack[lf->width*lf->height];
     int depth = 0;
     pic = flip(pic);
-    while(1) {
+    for(;;) {
         if(depth == max_depth) {
             TreeNode *up_node = curr; 
             float leaf_v = 7;
+            curr->state_value = leaf_v;
             Piece up_fig = pic;
-            while(up_node->parrent != NULL){
-                up_fig = flip(pic);
-                use_max = !use_max;
+
+             do {
+                //up_fig = flip(pic);
+                //use_max = !use_max;
                 up_node = up_node->parrent;
-                if(up_node->value == NAN) {
-                    up_node->value = leaf_v;
+                if(up_node->state_value != up_node->state_value) {
+                    up_node->state_value = leaf_v;
                     continue;
                 }
-                float old_value = up_node->value;
-                if(up_fig==X) 
-                    up_node->value = up_node->value > leaf_v ? up_node->value : leaf_v;
-                else
-                    up_node->value = up_node->value < leaf_v ? up_node->value : leaf_v;
-                if(old_value == up_node->value)
-                    break;
+                else {
+                }
+                //float old_state_value = up_node->state_value;
+                //if(up_fig==X) 
+                //    up_node->state_value = up_node->state_value > leaf_v ? up_node->state_value : leaf_v;
+                //else
+                //    up_node->state_value = up_node->state_value < leaf_v ? up_node->state_value : leaf_v;
+                //if(old_state_value == up_node->state_value)
+                //    break;
+            } while(up_node->parrent != NULL);
 
-
-            } 
-
+            stopper();
+            undo_move(lf, move_stack[depth-1]);
+            pic = flip(pic);
+            depth--;
             break;
         }
         for(int i=0;i<n_cols;i++) {
             if(curr->children[i] == NULL && get_cell(i, 0, lf) == NO_PIECE) {
                 do_move(lf, i, pic);
+                move_stack[depth] = i;
                 pic = flip(pic);
                 curr->children[i] = malloc(sizeof(TreeNode)+sizeof(TreeNode*)*n_cols);
                 curr->children[i]->parrent = curr;
                 curr = curr->children[i];
-                curr->value = NAN;
+                curr->state_value = NAN;
                 depth++;
                 break;
             }
