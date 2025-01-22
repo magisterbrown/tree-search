@@ -20,25 +20,29 @@ float *search(float res[], LField *lf, int max_depth, Piece pic) {
     int n_cols = lf->width;
     TreeNode *root = malloc(sizeof(TreeNode)+sizeof(TreeNode*)*n_cols);
     root->state_value = NAN;
-    root->fig = pic;
+    root->fig = flip(pic);
     TreeNode *curr = root;
     int depth = 0;
-    int ct = 0;
+    float max_est = 0;
     for(;;) {
-        int win = field_done(lf, flip(curr->fig), INAROW);
         int backtrack = 0;
-        if(win)
-        {
-            print_field(lf);
-            backtrack = 1;
-        }
-        else if(depth == max_depth) {
-            TreeNode *up_node = curr; 
-            float leaf_v = 7;
-            curr->state_value = leaf_v;
-            Piece up_fig = pic;
+        int win = field_done(lf, curr->fig, INAROW);
+        if(win || depth == max_depth) {
+            float leaf_v;
+            if(win)
+                leaf_v = curr->fig == X ? 999 : -999;
+            else {
+                leaf_v = field_eval(lf, INAROW);
+                //if(leaf_v >= max_est) {
+                //    print_field(lf);
+                //    printf("Value %f\n", leaf_v);
+                //    max_est = leaf_v;
+                //}
+            }
 
-             do {
+            TreeNode *up_node = curr; 
+            curr->state_value = leaf_v;
+            do {
                 up_node = up_node->parrent;
                 if(up_node->state_value != up_node->state_value) {
                     up_node->state_value = leaf_v;
@@ -52,10 +56,11 @@ float *search(float res[], LField *lf, int max_depth, Piece pic) {
         }
         else for(int i=0;i<n_cols;i++) {
             if(curr->children[i] == NULL && get_cell(i, 0, lf) == NO_PIECE) {
-                do_move(lf, i, curr->fig);
+                Piece next = flip(curr->fig);
+                do_move(lf, i, next);
                 curr->children[i] = malloc(sizeof(TreeNode)+sizeof(TreeNode*)*n_cols);
                 curr->children[i]->parrent = curr;
-                curr->children[i]->fig = flip(curr->fig);
+                curr->children[i]->fig = next;
                 curr = curr->children[i];
                 curr->state_value = NAN;
                 curr->idx=i;
@@ -63,13 +68,13 @@ float *search(float res[], LField *lf, int max_depth, Piece pic) {
                 break;
             }
             backtrack = i == n_cols-1;
-       }
+        }
         if(backtrack) {
-                undo_move(lf, curr->idx);
-                curr = curr->parrent;
-                depth--;
-                if(curr == NULL)
-                    goto cleanup;
+            undo_move(lf, curr->idx);
+            curr = curr->parrent;
+            depth--;
+            if(curr == NULL)
+                goto cleanup;
         }
     }
 
@@ -80,6 +85,6 @@ cleanup:
 int main(void) {
        LField *lf = create_lfield(SZ, SZ);
        print_field(lf);
-       float *b = search((float []){ [0 ... SZ] = 0}, lf, 5, X);
+       float *b = search((float []){ [0 ... SZ] = 0}, lf, 8, X);
        free(lf);
 }

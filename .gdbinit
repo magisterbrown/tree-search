@@ -1,6 +1,6 @@
 set confirm off
 source printer.py
-b main 
+b field_eval 
 r
 #b stopper
 #b 29
