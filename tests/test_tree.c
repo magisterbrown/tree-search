@@ -14,6 +14,8 @@ typedef struct TreeNode {
 #define INAROW 3
  
 void stopper() {}
+#define max(a, b) a>b ? a : b
+#define min(a, b) a<b ? a : b
 
 float *search(float res[], LField *lf, int max_depth, Piece pic) {
     int n_cols = lf->width;
@@ -33,26 +35,39 @@ float *search(float res[], LField *lf, int max_depth, Piece pic) {
             branch[depth].idx=-1;
             depth--;
             if(depth == -1)
-                return 0;
+                goto cleanup;
             undo_move(lf, branch[depth].idx);
             continue;
         }
-        do_move(lf, branch[depth].idx, depth%2 ? Y : X);
-        if(depth == max_depth-1 ) {
+        Piece fig = depth%2 ? Y : X;
+        do_move(lf, branch[depth].idx, fig);
+        int done = field_done(lf, fig, INAROW);
+        if(done || depth == max_depth-1 ) {
+            float value = done ? 999*(fig==X)-999*(fig==Y) : field_eval(lf, INAROW-1);
             stopper();
+            for(int i=depth;i>=0;i--) {
+                float old_value = branch[i].state_value;
+                branch[i].state_value = i%2 ? min(branch[i].state_value, value) : max(branch[i].state_value, value);
+                if(branch[i].state_value==old_value)
+                    break;
+            }
+
+
             print_field(lf);
+            printf("Vlaue %f\n", value);
             undo_move(lf, branch[depth].idx);
         } else { 
             depth++;
         }
     }
-
-   return res; 
+cleanup:
+    free(branch); 
+    return res; 
 }
 #define SZ 5
 int main(void) {
        LField *lf = create_lfield(SZ, SZ);
        print_field(lf);
-       float *b = search((float []){ [0 ... SZ] = 0}, lf, 8, X);
+       float *b = search((float []){ [0 ... SZ] = 0}, lf, 6, X);
        free(lf);
 }
