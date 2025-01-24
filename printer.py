@@ -46,7 +46,7 @@ def build_pretty_printer():
     pp = gdb.printing.RegexpCollectionPrettyPrinter(
         "microfield")
     pp.add_printer('LField', '^LField$', FieldPrinter)
-    pp.add_printer('tree', '^TreeNode$', TreePrinter)
+    #pp.add_printer('tree', '^TreeNode$', TreePrinter)
     return pp
 
 import gdb.printing

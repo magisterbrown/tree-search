@@ -10,6 +10,9 @@ all: build
 debug: build
 	gdb ./run
 
+gf2: build
+	gf2 ./run
+
 grind: build
 	valgrind ./run
 build:

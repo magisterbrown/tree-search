@@ -1,4 +1,5 @@
 #include "state.h"
+#include <alloca.h>
 #define NAN 0.0/0.0
 
 typedef struct {
@@ -7,78 +8,45 @@ typedef struct {
 } SearchConfig;
 
 typedef struct TreeNode {
-    unsigned char idx;
+    int idx;
     float state_value;
-    Piece fig;
-    struct TreeNode *parrent;
-    struct TreeNode *children[];
 } TreeNode;
 #define INAROW 3
-void stopper() {};
+ 
+void stopper() {}
 
 float *search(float res[], LField *lf, int max_depth, Piece pic) {
     int n_cols = lf->width;
-    TreeNode *root = malloc(sizeof(TreeNode)+sizeof(TreeNode*)*n_cols);
-    root->state_value = NAN;
-    root->fig = flip(pic);
-    TreeNode *curr = root;
+    TreeNode *branch = calloc(max_depth, sizeof(TreeNode));
+    branch[0].state_value = NAN;
+    for(int i=0;i<max_depth;i++)
+        branch[i].idx = -1;
+    stopper();
     int depth = 0;
-    float max_est = 0;
     for(;;) {
-        int backtrack = 0;
-        int win = field_done(lf, curr->fig, INAROW);
-        if(win || depth == max_depth) {
-            float leaf_v;
-            if(win)
-                leaf_v = curr->fig == X ? 999 : -999;
-            else {
-                leaf_v = field_eval(lf, INAROW);
-                //if(leaf_v >= max_est) {
-                //    print_field(lf);
-                //    printf("Value %f\n", leaf_v);
-                //    max_est = leaf_v;
-                //}
-            }
+        do {
+            branch[depth].idx++;
+            branch[depth].state_value = NAN;
+        } while(get_cell(branch[depth].idx, 0, lf) != NO_PIECE && branch[depth].idx < n_cols);
 
-            TreeNode *up_node = curr; 
-            curr->state_value = leaf_v;
-            do {
-                up_node = up_node->parrent;
-                if(up_node->state_value != up_node->state_value) {
-                    up_node->state_value = leaf_v;
-                    continue;
-                }
-                else {
-                }
-            } while(up_node->parrent != NULL);
-
-            backtrack = 1;
-        }
-        else for(int i=0;i<n_cols;i++) {
-            if(curr->children[i] == NULL && get_cell(i, 0, lf) == NO_PIECE) {
-                Piece next = flip(curr->fig);
-                do_move(lf, i, next);
-                curr->children[i] = malloc(sizeof(TreeNode)+sizeof(TreeNode*)*n_cols);
-                curr->children[i]->parrent = curr;
-                curr->children[i]->fig = next;
-                curr = curr->children[i];
-                curr->state_value = NAN;
-                curr->idx=i;
-                depth++;
-                break;
-            }
-            backtrack = i == n_cols-1;
-        }
-        if(backtrack) {
-            undo_move(lf, curr->idx);
-            curr = curr->parrent;
+        if(branch[depth].idx == n_cols) {
+            branch[depth].idx=-1;
             depth--;
-            if(curr == NULL)
-                goto cleanup;
+            if(depth == -1)
+                return 0;
+            undo_move(lf, branch[depth].idx);
+            continue;
+        }
+        do_move(lf, branch[depth].idx, depth%2 ? Y : X);
+        if(depth == max_depth-1 ) {
+            stopper();
+            print_field(lf);
+            undo_move(lf, branch[depth].idx);
+        } else { 
+            depth++;
         }
     }
 
-cleanup:
    return res; 
 }
 #define SZ 5
