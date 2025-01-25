@@ -32,6 +32,7 @@ float *search(float res[], GameContext gm, SearchContext sc) {
             undo_move(lf, branch[depth].idx);
             continue;
         }
+
         Piece fig = depth%2 ? flip(pic) : pic;
         do_move(lf, branch[depth].idx, fig);
         int done = field_done(lf, fig, gm.inarow);
@@ -39,7 +40,8 @@ float *search(float res[], GameContext gm, SearchContext sc) {
             float value = done ? 999*(fig==X)-999*(fig==Y) : 0;
             for(int i=depth;i>=0;i--) {
                 float old_value = branch[i].state_value;
-                branch[i].state_value = i%2 ? min(branch[i].state_value, value) : max(branch[i].state_value, value);
+                branch[i].state_value = fig==Y ? min(branch[i].state_value, value) : max(branch[i].state_value, value);
+                fig = flip(fig);
                 if(branch[i].state_value==old_value)
                     break;
             }
