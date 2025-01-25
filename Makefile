@@ -1,5 +1,5 @@
 BASED_COMPILE := gcc -ggdb -o run 
-SRC := checker.c mover.c
+SRC := checker.c mover.c search.c
 #TESTS := $(wildcard tests/*)
 TESTS := tests/test_tree.c
 THEFT := -Itheft/inc -Ltheft/build -ltheft

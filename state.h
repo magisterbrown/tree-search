@@ -28,6 +28,12 @@ typedef struct{
     int dy;
 } PointVec;
 
+typedef struct {
+    int n_cols;
+    int depth;
+} SearchConfig;
+
+
 int check_line_done(LField *board, PointVec pv, Piece pic);
 int check_line_eval(LField *board, PointVec pv, Piece pic, int full_len);
 int field_done(LField *lf, Piece fig, int ln);
@@ -36,3 +42,20 @@ float  field_eval(LField *lf, int ln);
 void do_move(LField *curr, int col, Piece fig);
 void undo_move(LField *curr, int col); 
 void print_field(LField *curr); 
+
+
+typedef struct TreeNode {
+    int idx;
+    float state_value;
+} TreeNode;
+typedef struct {
+    LField *field;
+    Piece pic;
+    int inarow;
+} GameContext;
+typedef struct {
+    int max_depth;
+} SearchContext;
+
+float *search(float res[], GameContext gm, SearchContext sc);
+
