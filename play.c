@@ -25,7 +25,7 @@ void* module = 0;
      }                                                        \
      search_inst = dlsym(module, "search");                   \
  } while((make_status != 0 || module == NULL) && (getchar() || 1))                                                                     
-                                                                      
+
 
 int main(void) 
 {

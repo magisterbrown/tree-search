@@ -10,12 +10,12 @@ typedef enum Piece: unsigned char {
 
 #define flip(fig) fig == X ? Y : X
 
-typedef struct LField {
+typedef struct {
     int width;
     int height;
-    Piece board[];
+    Piece *board;
 } LField;
-#define create_lfield(width, height) memcpy(calloc(1,sizeof(LField)+width*height),&(LField){width,height}, sizeof(LField));
+#define create_lfield(width, height) &(LField){width, height, (Piece *)(Piece[3]){}}
 #define get_cell(x,y,field) (field)->board[y*(field->width)+x]
 
 
