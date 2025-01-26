@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#define WIDTH 4
-#define HEIGHT 3
 
 typedef enum Piece: unsigned char {
     NO_PIECE,

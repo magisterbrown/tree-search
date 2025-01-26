@@ -4,15 +4,12 @@
 
 #define max(a, b) a>b ? a : b
 #define min(a, b) a<b ? a : b
-void stopper() {}
-
 float *search(float res[], GameContext gm, SearchContext sc) {
     LField* lf = gm.field;  
     Piece pic = gm.pic;
     int n_cols = lf->width;
     TreeNode *branch = calloc(sc.max_depth, sizeof(TreeNode));
     branch[0].state_value = NAN;
-    stopper();
     for(int i=0;i<sc.max_depth;i++)
         branch[i].idx = -1;
     int depth = 0;
