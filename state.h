@@ -57,3 +57,16 @@ typedef struct {
 
 float *search(float res[], GameContext gm, SearchContext sc);
 
+// TODO: Stack allocator for the field
+typedef struct {
+    int a;
+    int b[];
+} store;
+//static inline store *cons(int a, unsigned char buff[]) {
+static inline store *cons(int a, store *tmp) {
+     tmp->a = a;
+     return tmp;
+}
+#define sloca(sz) cons(sz, (store *)(unsigned char [sizeof(int)*(sz+1)]){});
+//#define sloca(sz) cons(sz, (unsigned char [sizeof(int)*(sz+1)]){});
+
