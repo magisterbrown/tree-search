@@ -1,7 +1,8 @@
 #include "state.h"
 #include <dlfcn.h>
-#define WIDTH 5
-#define HEIGHT 6
+#define WIDTH 4
+#define HEIGHT 3
+#define INAROW 3
 struct History {
     int pointer;
     int moves[WIDTH*HEIGHT];
@@ -40,18 +41,25 @@ int main(void)
         print_field(lf);
         int move = getchar();
         while (getchar() != '\n');
-        if(move > 48 && move<48+WIDTH) { // Do a move
-            int loc = move-48;
-            do_move(lf, loc, fig);
-            push_history(hs, loc);
-            fig = flip(fig);
+        if(move > 48 && move<=48+WIDTH) { // Do a move
+            if(!field_done(lf, X, INAROW) && !field_done(lf, Y, INAROW)) {
+                int loc = move-49;
+                do_move(lf, loc, fig);
+                push_history(hs, loc);
+                fig = flip(fig);
+            } else {
+                printf("Game done\n");
+            }
         } else if(move=='u') { // Redo move  
             int uno = pop_history(hs);
             if(uno != -1)
+            {
                 undo_move(lf, uno);
+                fig = flip(fig);
+            }
 
         } else if(move=='e') { // Explore 
-            float *b = search_inst((float [WIDTH]){}, (GameContext){lf, fig, .inarow=3}, (SearchContext){ .max_depth=6});
+            float *b = search_inst((float [WIDTH]){}, (GameContext){lf, fig, .inarow=INAROW}, (SearchContext){ .max_depth=3});
             printf("Values: ");
             for(int i=0;i<WIDTH;i++)
                 printf("%d: %.3f ", i+1, b[i]);
