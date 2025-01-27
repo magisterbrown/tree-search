@@ -39,7 +39,6 @@ void test_done()
 
     int res = check_line_done(lf, (PointVec){0, 0, 1, 0}, X);
     assert(res==n);
-    free(lf);
 }
 int main(void) {
     test_eval();

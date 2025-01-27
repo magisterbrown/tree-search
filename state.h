@@ -13,9 +13,16 @@ typedef enum Piece: unsigned char {
 typedef struct {
     int width;
     int height;
-    Piece *board;
+    Piece board[];
 } LField;
-#define create_lfield(width, height) &(LField){width, height, (Piece *)(Piece[3]){}}
+//#define create_lfield(width, height) &(LField){width, height, (Piece *)(Piece[3]){}}
+#define create_lfield(width, height) _create_lfield(width, height, (LField *)(unsigned char [sizeof(int)*2+(sizeof(Piece)*width*height)]){});
+static inline LField *_create_lfield(int width, int height, LField *field)
+{
+    field->width = width;
+    field->height = height;
+    return field;
+}
 #define get_cell(x,y,field) (field)->board[y*(field->width)+x]
 
 

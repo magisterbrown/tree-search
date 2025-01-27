@@ -45,12 +45,12 @@ int main(void)
             do_move(lf, loc, fig);
             push_history(hs, loc);
             fig = flip(fig);
-        } else if(move=='r') { // Redo move  
+        } else if(move=='u') { // Redo move  
             int uno = pop_history(hs);
             if(uno != -1)
                 undo_move(lf, uno);
 
-        } else if(move=='s') { // Explore 
+        } else if(move=='e') { // Explore 
             float *b = search_inst((float [WIDTH]){}, (GameContext){lf, fig, .inarow=3}, (SearchContext){ .max_depth=6});
             printf("Values: ");
             for(int i=0;i<WIDTH;i++)
@@ -59,9 +59,12 @@ int main(void)
                         
         } else if(move=='s') { // Save position
 
-        } else if(move=='l') { // Hotreload search
+        } else if(move=='r') { // Hotreload search
             dlclose(module);
             hotreload_search();
+        } else if(move=='h') { // Hotreload search
+            char *help = "u - undo\nr - reload\ne - explore";
+            printf("%s\n", help);
         } else {
             printf("Wrong action %d\n", move);
         }
