@@ -1,10 +1,10 @@
+set debuginfod enabled on
 set confirm off
 source printer.py
-#b search
-#r
-b main
+b search
+c
 #b 29
-r
+#r
 #n
 #b 
 #del 1

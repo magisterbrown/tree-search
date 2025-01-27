@@ -8,6 +8,7 @@ float *search(float res[], GameContext gm, SearchContext sc) {
     LField* lf = gm.field;  
     Piece pic = gm.pic;
     int n_cols = lf->width;
+    sc.max_depth=6;
     TreeNode *branch = calloc(sc.max_depth, sizeof(TreeNode));
     branch[0].state_value = NAN;
     for(int i=0;i<sc.max_depth;i++)
@@ -33,8 +34,13 @@ float *search(float res[], GameContext gm, SearchContext sc) {
         Piece fig = depth%2 ? flip(pic) : pic;
         do_move(lf, branch[depth].idx, fig);
         int done = field_done(lf, fig, gm.inarow);
-        if(done || depth == sc.max_depth-1 ) {
+        int draw = 1;
+        for(int i=0;i<n_cols;i++) 
+            draw &= get_cell(i, 0, lf) != NO_PIECE;
+
+        if(done || depth == sc.max_depth-1 || draw) {
             float value = done ? 999*(fig==X)-999*(fig==Y) : 0;
+            fig = flip(fig);
             for(int i=depth;i>=0;i--) {
                 float old_value = branch[i].state_value;
                 branch[i].state_value = fig==Y ? min(branch[i].state_value, value) : max(branch[i].state_value, value);
@@ -43,8 +49,12 @@ float *search(float res[], GameContext gm, SearchContext sc) {
                     break;
             }
 
-            //print_field(lf);
-            //printf("Vlaue %f\n", value);
+            if(done) {
+                static int ct = 0;
+                ct++;
+                print_field(lf);
+                printf("Vlaue %f\n", value);
+            }
             undo_move(lf, branch[depth].idx);
         } else { 
             depth++;

@@ -32,4 +32,8 @@ play: base
 	$(BASED_COMPILE) play.c  -L. -lbase -Wl,-rpath,.
 	./run
 
-.PHONY: all build
+attach:
+	echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+	gf2 -p $(shell pidof ./run)
+
+.PHONY: all build attach
