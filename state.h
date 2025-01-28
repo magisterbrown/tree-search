@@ -51,8 +51,9 @@ void print_field(LField *curr);
 
 typedef struct TreeNode {
     int idx;
+    int checked;
     float state_value;
-    float old_value;
+    float real_value;
 } TreeNode;
 typedef struct {
     LField *field;
