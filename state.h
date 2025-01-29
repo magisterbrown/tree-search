@@ -65,3 +65,6 @@ typedef struct {
 } SearchContext;
 
 float *search(float res[], GameContext gm, SearchContext sc);
+
+int get_winner(LField *lf, int inarow);
+int any_done(LField *lf, int inarow);

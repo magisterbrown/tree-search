@@ -78,3 +78,27 @@ float field_eval(LField *lf, int ln)
     }
     return maxr[0]-maxr[1];
 }
+
+int any_done(LField *lf, int inarow) 
+{
+    if(field_done(lf, X, inarow))
+        return 1;
+
+    if(field_done(lf, Y, inarow))
+        return 1;
+
+    int draw = 1;
+    for(int i=0;i<lf->width;i++) 
+        draw &= get_cell(i, 0, lf) != NO_PIECE;
+
+    return draw; 
+}
+
+int get_winner(LField *lf, int inarow)
+{
+    if(field_done(lf, X, inarow))
+        return 1;
+    if(field_done(lf, Y, inarow))
+        return -1;
+    return 0;
+}

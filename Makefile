@@ -23,7 +23,7 @@ build:
 	$(BASED_COMPILE) $(SRC) $(TESTS) -I . $(THEFT)
 
 search: base
-	$(SHARED_COMPILE) libsearch.so search.c -L. -lbase
+	$(SHARED_COMPILE) libsearch.so search.c -L. -lbase -Wl,-rpath,.
 
 base:
 	$(SHARED_COMPILE) libbase.so checker.c mover.c
