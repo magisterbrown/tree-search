@@ -1,3 +1,6 @@
 run
 theft
 *.so
+env/
+*.pyc
+__pycache__

@@ -32,7 +32,7 @@ float minimax(LField *lf, Piece fig, int depth, int inarow)
             undo_move(lf, i);
         }
     }
-    print_field(lf);
+    //print_field(lf);
     return value;
 }
 float *search(float res[], GameContext gm, SearchContext sc) {

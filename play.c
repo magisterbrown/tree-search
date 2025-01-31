@@ -3,6 +3,7 @@
 #define WIDTH 4
 #define HEIGHT 3
 #define INAROW 3
+#define MAXDEPTH 2
 struct History {
     int pointer;
     int moves[WIDTH*HEIGHT];
@@ -59,7 +60,7 @@ int main(void)
             }
 
         } else if(move=='e') { // Explore 
-            float *b = search_inst((float [WIDTH]){}, (GameContext){lf, fig, .inarow=INAROW}, (SearchContext){ .max_depth=3});
+            float *b = search_inst((float [WIDTH]){}, (GameContext){lf, fig, .inarow=INAROW}, (SearchContext){ .max_depth=MAXDEPTH});
             printf("Values: ");
             for(int i=0;i<WIDTH;i++)
                 printf("%d: %.3f ", i+1, b[i]);
