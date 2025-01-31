@@ -16,6 +16,7 @@ typedef struct {
     Piece board[];
 } LField;
 //#define create_lfield(width, height) &(LField){width, height, (Piece *)(Piece[3]){}}
+#define field_size(field) sizeof(int)*2+(sizeof(Piece)*(field)->width*(field)->height)
 #define create_lfield(width, height) _create_lfield(width, height, (LField *)(unsigned char [sizeof(int)*2+(sizeof(Piece)*width*height)]){});
 static inline LField *_create_lfield(int width, int height, LField *field)
 {

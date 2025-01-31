@@ -1,5 +1,7 @@
 #include "state.h"
 #include <dlfcn.h>
+#include <stdio.h>
+#include <string.h>
 #define WIDTH 4
 #define HEIGHT 3
 #define INAROW 3
@@ -35,6 +37,7 @@ int main(void)
     LField *lf = create_lfield(WIDTH, HEIGHT);
     Piece fig = X;
     struct History hs = {};
+    float last_values[WIDTH];
 
     hotreload_search();
     
@@ -67,12 +70,33 @@ int main(void)
             printf("\n");
                         
         } else if(move=='s') { // Save position
+            float *b = search_inst((float [WIDTH]){}, (GameContext){lf, fig, .inarow=INAROW}, (SearchContext){ .max_depth=MAXDEPTH});
+            char filename[20];
+            char full_filename[50];
+            printf("Input file name: ");
+            scanf("%20s", filename);
+            sprintf(full_filename, "%s/%s.gm", "resources/saved_positions", filename);
+            FILE * file= fopen(full_filename, "wb");
+            if (file != NULL) {
+                fwrite(lf, field_size(lf), 1, file);
+                fwrite(&fig, sizeof(Piece), 1, file);
+                int tmp = INAROW;
+                fwrite(&tmp, sizeof(int), 1, file);
+                tmp = MAXDEPTH;
+                fwrite(&tmp, sizeof(int), 1, file);
+                fwrite(b, sizeof(float), WIDTH, file);
 
+                fclose(file);
+                printf("Written %s\n", filename);
+            } else {
+                printf("File did not open");
+            }
+            
         } else if(move=='r') { // Hotreload search
             dlclose(module);
             hotreload_search();
         } else if(move=='h') { // Hotreload search
-            char *help = "u - undo\nr - reload\ne - explore";
+            char *help = "u - undo\nr - reload\ne - explore\ns - save position";
             printf("%s\n", help);
         } else {
             printf("Wrong action %d\n", move);

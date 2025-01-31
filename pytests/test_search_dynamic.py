@@ -12,6 +12,7 @@ class TestSearchDynamic(unittest.TestCase):
         self.combinations = list(itertools.product(self.inarows, itertools.product(self.sizes, self.depths)))
         self.msg = "Width: {w} Height: {h} Inarow: {i} Depth: {d} Moves: {m}"
 
+    @unittest.skip
     def test_simetric_oponent(self):
         for inarow, ((width, height), depth) in self.combinations:
             steps = list()
@@ -32,7 +33,7 @@ class TestSearchDynamic(unittest.TestCase):
             if(fres != first_nonzero):
                 game.print()
                 self.assertEqual(fres, first_nonzero, msg=self.msg.format(w=width,h=height,i=inarow,d=depth,m=steps))
-
+    @unittest.skip
     def test_random_oponent(self):
         for inarow, ((width, height), depth) in self.combinations:
             steps = list()

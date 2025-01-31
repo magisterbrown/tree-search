@@ -4,3 +4,4 @@ theft
 env/
 *.pyc
 __pycache__
+resources/
