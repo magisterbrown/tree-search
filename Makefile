@@ -36,7 +36,7 @@ attach:
 	echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 	gf2 -p $(shell pidof ./run)
 
-pytest:
+pytest: search
 	python -m unittest discover pytests
 
 .PHONY: all build attach

@@ -38,6 +38,7 @@ int main(void)
     Piece fig = X;
     struct History hs = {};
     float last_values[WIDTH];
+    int max_depth = MAXDEPTH;
 
     hotreload_search();
     
@@ -63,14 +64,14 @@ int main(void)
             }
 
         } else if(move=='e') { // Explore 
-            float *b = search_inst((float [WIDTH]){}, (GameContext){lf, fig, .inarow=INAROW}, (SearchContext){ .max_depth=MAXDEPTH});
+            float *b = search_inst((float [WIDTH]){}, (GameContext){lf, fig, .inarow=INAROW}, (SearchContext){ .max_depth=max_depth});
             printf("Values: ");
             for(int i=0;i<WIDTH;i++)
                 printf("%d: %.3f ", i+1, b[i]);
             printf("\n");
                         
         } else if(move=='s') { // Save position
-            float *b = search_inst((float [WIDTH]){}, (GameContext){lf, fig, .inarow=INAROW}, (SearchContext){ .max_depth=MAXDEPTH});
+            float *b = search_inst((float [WIDTH]){}, (GameContext){lf, fig, .inarow=INAROW}, (SearchContext){ .max_depth=max_depth});
             char filename[20];
             char full_filename[50];
             printf("Input file name: ");
@@ -82,8 +83,7 @@ int main(void)
                 fwrite(&fig, sizeof(Piece), 1, file);
                 int tmp = INAROW;
                 fwrite(&tmp, sizeof(int), 1, file);
-                tmp = MAXDEPTH;
-                fwrite(&tmp, sizeof(int), 1, file);
+                fwrite(&max_depth, sizeof(int), 1, file);
                 fwrite(b, sizeof(float), WIDTH, file);
 
                 fclose(file);
@@ -98,6 +98,12 @@ int main(void)
         } else if(move=='h') { // Hotreload search
             char *help = "u - undo\nr - reload\ne - explore\ns - save position";
             printf("%s\n", help);
+        } else if(move=='+') { // Increase max depth
+            max_depth++;
+            printf("Max depth %d\n", max_depth);
+        } else if(move=='-') { // Decrease max_depth
+            max_depth--;
+            printf("Max depth %d\n", max_depth);
         } else {
             printf("Wrong action %d\n", move);
         }
