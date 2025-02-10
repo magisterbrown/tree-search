@@ -28,8 +28,13 @@ search: base
 base:
 	$(SHARED_COMPILE) libbase.so checker.c mover.c
 
+
 play: base 
 	$(BASED_COMPILE) play.c  -L. -lbase -Wl,-rpath,.
+	./run
+
+explore: search
+	$(BASED_COMPILE) explore.c  -L. -lbase -Wl,-rpath,.
 	./run
 
 attach:
