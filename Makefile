@@ -34,7 +34,7 @@ play: base
 	./run
 
 explore: search
-	$(BASED_COMPILE) explore.c  -L. -lbase -Wl,-rpath,.
+	$(BASED_COMPILE) explore.c  -L. -lm -lsearch -lbase -Wl,-rpath,.
 	./run
 
 attach:

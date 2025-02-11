@@ -1,8 +1,8 @@
 set debuginfod enabled on
 set confirm off
 source printer.py
-b search
-c
+b main
+r
 #b 29
 #r
 #n
