@@ -3,13 +3,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <signal.h>
 
-typedef struct {
-    int widh;
-    int height;
-    int n_steps;
-    unsigned char moves[];
-} GameRecord;
 
 int softmax_choice(size_t sz, float scores[sz])
 {
@@ -41,30 +36,67 @@ int softmax_choice(size_t sz, float scores[sz])
 #define HEIGHT 5
 #define INAROW 4
 
+typedef struct {
+    int widh;
+    int height;
+    int n_steps;
+    int res;
+    unsigned char moves[];
+} GameRecord;
+
+int keepgoing = 1;
+void sig_handler(int signo)
+{
+    keepgoing = 0;
+}
+
+struct Stats {
+    int draws;
+    int xs;
+    int ys;
+};
+
 int main(void)
 {
     srand(time(NULL));
-    LField *lf = create_lfield(WIDTH, HEIGHT);
+    signal(SIGINT, sig_handler);
     unsigned char buffer[WIDTH*HEIGHT];
-    Piece fig = X;
-    int res = 0;
-    for(;;) {
-        float estimates[WIDTH];
-        search(estimates,(GameContext){lf, fig, INAROW}, (SearchContext){6});           
-        if(fig == Y)
-            for(int i=0;i<WIDTH;i++)
-                estimates[i] *= -1.0f;
-        int move = softmax_choice(WIDTH, estimates);
-        if(move == -1)
-            break;
+    FILE *bindone = fopen("resources/dataset.bindone", "a");
+    struct Stats results = {0};
+    for(int played=1;keepgoing;played++) {
+        LField *lf = create_lfield(WIDTH, HEIGHT);
+        int buffpt = 0;
+        Piece fig = X;
+        GameRecord record = {.widh=WIDTH, .height=HEIGHT, .res=0};
+        for(;;) {
+            float estimates[WIDTH];
+            search(estimates,(GameContext){lf, fig, INAROW}, (SearchContext){6});           
+            if(fig == Y)
+                for(int i=0;i<WIDTH;i++)
+                    estimates[i] *= -1.0f;
+            int move = softmax_choice(WIDTH, estimates);
+            if(move == -1)
+                break;
 
-        do_move(lf, move, fig);
-        if(field_done(lf, fig, INAROW)) {
-            res = fig==X ? 1 : -1;
-            break;
+            do_move(lf, move, fig);
+            buffer[buffpt++] = move;
+
+            if(field_done(lf, fig, INAROW)) {
+                record.res = fig==X ? 1 : -1;
+                break;
+            }
+            fig = flip(fig);
         }
-        fig = flip(fig);
+        print_field(lf);
+        results.draws += record.res == 0;
+        results.xs += record.res == 1;
+        results.ys += record.res == -1;
+        record.n_steps = buffpt;
+        fwrite(&record, sizeof(GameRecord), 1, bindone);
+        fwrite(buffer, 1, buffpt, bindone);
+        buffpt = 0;
+        printf("Last result: %d\n", record.res);
+        printf("Played: %d Draws: %d X wins: %d Y wins: %d\n", played, results.draws, results.xs, results.ys);
     }
-    print_field(lf);
-    printf("Result %d\n", res);
+    fclose(bindone);
 }
