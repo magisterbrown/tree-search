@@ -37,8 +37,8 @@ int softmax_choice(size_t sz, float scores[sz])
 #define INAROW 4
 
 typedef struct {
-    int widh;
-    int height;
+    //int widh;
+    //int height;
     int n_steps;
     int res;
     unsigned char moves[];
@@ -62,12 +62,14 @@ int main(void)
     signal(SIGINT, sig_handler);
     unsigned char buffer[WIDTH*HEIGHT];
     FILE *bindone = fopen("resources/dataset.bindone", "a");
+    putw(WIDTH,  bindone);
+    putw(HEIGHT, bindone);
     struct Stats results = {0};
     for(int played=1;keepgoing;played++) {
         LField *lf = create_lfield(WIDTH, HEIGHT);
         int buffpt = 0;
         Piece fig = X;
-        GameRecord record = {.widh=WIDTH, .height=HEIGHT, .res=0};
+        GameRecord record = {.res=0};
         for(;;) {
             float estimates[WIDTH];
             search(estimates,(GameContext){lf, fig, INAROW}, (SearchContext){6});           
