@@ -79,9 +79,9 @@ int main(void)
             int move = softmax_choice(WIDTH, estimates);
             if(move == -1)
                 break;
+            int rm = do_move(lf, move, fig);
 
-            do_move(lf, move, fig);
-            buffer[buffpt++] = move;
+            buffer[buffpt++] = (unsigned char)rm;
 
             if(field_done(lf, fig, INAROW)) {
                 record.res = fig==X ? 1 : -1;

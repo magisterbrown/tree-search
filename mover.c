@@ -1,13 +1,14 @@
 #include "state.h"
 
-void do_move(LField *curr, int col, Piece fig) 
+int do_move(LField *curr, int col, Piece fig) 
 {
    for(int y=curr->height-1;y>=0;y--) {
         if(curr->board[y*curr->width+col] == NO_PIECE) {
             curr->board[y*curr->width+col] = fig;
-            break;
+            return y*curr->width+col;
         }
    }
+   return -1;
 }
 
 void undo_move(LField *curr, int col) 
