@@ -68,11 +68,11 @@ int main(void)
         fprintf(stderr, "Make a resources folder\n"); 
         return 1;
     }
+    putw(WIDTH,  bindone);
+    putw(HEIGHT, bindone);
     struct Stats results = {0};
     int width = WIDTH;
     int height = HEIGHT;
-    fwrite(&width, sizeof(int), 1, bindone);
-    fwrite(&height, sizeof(int), 1, bindone);
 
     for(int played=1;keepgoing;played++) {
         LField *lf = create_lfield(WIDTH, HEIGHT);
@@ -88,9 +88,9 @@ int main(void)
             int move = softmax_choice(WIDTH, estimates);
             if(move == -1)
                 break;
-
             int place = do_move(lf, move, fig);
             buffer[buffpt++] = place;
+            //printf("Place %d\n", place);
 
             if(field_done(lf, fig, INAROW)) {
                 record.res = fig==X ? 1 : -1;

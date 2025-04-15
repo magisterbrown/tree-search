@@ -8,6 +8,7 @@ int do_move(LField *curr, int col, Piece fig)
             return y*curr->width+col;
         }
    }
+   return -1;
 }
 
 void undo_move(LField *curr, int col) 
