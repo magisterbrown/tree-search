@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import DataLoader
 import random
 
-datas = "games111.bindone"
+datas = "/home/brownie/minimax/tree-search/resources/dataset.bindone"
 
 class GameRecord(Structure):
     _fields_ = [
@@ -29,12 +29,13 @@ def repack(fname):
                 xplays[idx] = (1-i%2)
                 yplays[idx] = i%2
                 if game.n_steps-i<8:
-                    rsx = xplays.reshape(height, width)
-                    rsy = yplays.reshape(height, width)
-                    if i%2:
-                        yield rsx, rsy, (game.res+1)/2
-                    else:
-                        yield rsy, rsx, (-game.res+1)/2
+                    rsx = xplays#.reshape(height, width)
+                    rsy = yplays#.reshape(height, width)
+                    if(game.res != 0):
+                        if i%2:
+                            yield rsx, rsy, np.float32(game.res+1)/2
+                        else:
+                            yield rsy, rsx, np.float32(-game.res+1)/2
 
     
 class PositionDataset(torch.utils.data.IterableDataset):
@@ -59,9 +60,11 @@ class PositionDataset(torch.utils.data.IterableDataset):
 
 if __name__ == "__main__":
     pd = PositionDataset(datas)
+    import ipdb;ipdb.set_trace()
     
-    dl = DataLoader(pd, batch_size=6)
+    dl = DataLoader(pd, batch_size=16)
     for batch in dl:
         print(batch[0].shape)
+        print(batch[1])
 
 
