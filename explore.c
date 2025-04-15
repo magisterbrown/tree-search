@@ -35,13 +35,15 @@ int softmax_choice(size_t sz, float scores[sz])
 #define WIDTH 6
 #define HEIGHT 5
 #define INAROW 4
+#define MAGIC 0xDEADBEEF
 
 typedef struct {
-    int widh;
-    int height;
+    //int widh;
+    //int height;
     int n_steps;
     int res;
-    unsigned char moves[];
+    unsigned int magic; 
+    //unsigned char moves[];
 } GameRecord;
 
 int keepgoing = 1;
@@ -62,12 +64,21 @@ int main(void)
     signal(SIGINT, sig_handler);
     unsigned char buffer[WIDTH*HEIGHT];
     FILE *bindone = fopen("resources/dataset.bindone", "a");
+    if(bindone == NULL) {
+        fprintf(stderr, "Make a resources folder\n"); 
+        return 1;
+    }
     struct Stats results = {0};
+    int width = WIDTH;
+    int height = HEIGHT;
+    fwrite(&width, sizeof(int), 1, bindone);
+    fwrite(&height, sizeof(int), 1, bindone);
+
     for(int played=1;keepgoing;played++) {
         LField *lf = create_lfield(WIDTH, HEIGHT);
         int buffpt = 0;
         Piece fig = X;
-        GameRecord record = {.widh=WIDTH, .height=HEIGHT, .res=0};
+        GameRecord record = {.res=0, .magic=MAGIC};
         for(;;) {
             float estimates[WIDTH];
             search(estimates,(GameContext){lf, fig, INAROW}, (SearchContext){6});           
@@ -78,8 +89,8 @@ int main(void)
             if(move == -1)
                 break;
 
-            do_move(lf, move, fig);
-            buffer[buffpt++] = move;
+            int place = do_move(lf, move, fig);
+            buffer[buffpt++] = place;
 
             if(field_done(lf, fig, INAROW)) {
                 record.res = fig==X ? 1 : -1;
@@ -94,7 +105,7 @@ int main(void)
         record.n_steps = buffpt;
         fwrite(&record, sizeof(GameRecord), 1, bindone);
         fwrite(buffer, 1, buffpt, bindone);
-        buffpt = 0;
+        printf("Moves  %d \n", buffpt);
         printf("Last result: %d\n", record.res);
         printf("Played: %d Draws: %d X wins: %d Y wins: %d\n", played, results.draws, results.xs, results.ys);
     }
