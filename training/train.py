@@ -35,7 +35,8 @@ class Model(nn.Module):
         x = self.output(x)
         return x
 
-datas = "/home/brownie/minimax/tree-search/resources/dataset.bindone"
+datas = "/home/brownie/minimax/tree-search/resources/train.bindone"
+test_file = "/home/brownie/minimax/tree-search/resources/test.bindone"
 
 import torch
 import numpy as np
@@ -56,6 +57,7 @@ import torch.optim as optim
 
 if __name__ == "__main__":
     pd = PositionDataset(datas)
+    test_ds = PositionDataset(test_file)
     
     dl = DataLoader(pd, batch_size=4)
     device = "cuda:0"
@@ -87,6 +89,7 @@ if __name__ == "__main__":
             t = target
             epsilon = 1e-12
             outcome_entropy = -(t * (t + epsilon).log() + (1.0 - t) * (1.0 - t + epsilon).log())
+            print(outcome_entropy)
 
             print(loss.item() - outcome_entropy.mean().item())
         print(cmb)

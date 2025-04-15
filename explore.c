@@ -58,18 +58,38 @@ struct Stats {
     int ys;
 };
 
+#define OUTPUT "resources/test.bindone"
 int main(void)
 {
     srand(time(NULL));
     signal(SIGINT, sig_handler);
     unsigned char buffer[WIDTH*HEIGHT];
-    FILE *bindone = fopen("resources/dataset.bindone", "a");
+    FILE *check = fopen(OUTPUT, "r");
+    FILE *bindone = fopen(OUTPUT, "a");
     if(bindone == NULL) {
         fprintf(stderr, "Make a resources folder\n"); 
         return 1;
     }
-    putw(WIDTH,  bindone);
-    putw(HEIGHT, bindone);
+    // TODO: put only if file does not exist
+
+    if(check) {
+        int side;        
+        fread(&side, sizeof(int), 1, check);
+        if(side!=WIDTH){
+            fprintf(stderr, "File width %d does not match search width %d\n", side, WIDTH); 
+            return 1;
+        }
+        fread(&side, sizeof(int), 1, check);
+        if(side!=HEIGHT){
+            fprintf(stderr, "File height %d does not match search height %d\n", side, HEIGHT); 
+            return 1;
+        }
+        fprintf(stderr, "Appending\n");
+        fclose(check);
+    } else {
+        putw(WIDTH,  bindone);
+        putw(HEIGHT, bindone);
+    }
     struct Stats results = {0};
     int width = WIDTH;
     int height = HEIGHT;
