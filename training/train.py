@@ -24,13 +24,13 @@ class Model(nn.Module):
         x = torch.concatenate([us_x, them_x], dim=-1)
         # print(f"Stats: {x.shape} mean: {x.mean()} std: {x.std()}")
 
-        x=F.leaky_relu(x)
+        x=F.relu(x)
         x = self.l1(x)
         ##x = torch.clamp(x, 0, 1)
-        x=F.leaky_relu(x)
+        x=F.relu(x)
         #x=F.tanh(x)
         x = self.l2(x)
-        x=F.leaky_relu(x)
+        x=F.relu(x)
         #x = torch.clamp(x, 0, 1)
         x = self.output(x)
         return x
