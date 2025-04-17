@@ -10,8 +10,8 @@ class Model(nn.Module):
         super().__init__()
         width = 6
         height = 5
-        self.transformer = nn.Linear(width*height, 512)
-        self.l1 = nn.Linear(1024, 256)
+        self.transformer = nn.Linear(width*height, 256)
+        self.l1 = nn.Linear(512, 256)
         self.l2 = nn.Linear(256, 32)
         self.output = nn.Linear(32, 1)
 
@@ -35,8 +35,9 @@ class Model(nn.Module):
         x = self.output(x)
         return x
 
-datas = "/home/brownie/minimax/tree-search/resources/train.bindone"
-test_file = "/home/brownie/minimax/tree-search/resources/test.bindone"
+base_path = "/home/brownie/minimax/tree-search/resources"
+datas = f"{base_path}/train.bindone"
+test_file = f"{base_path}/test.bindone"
 
 import torch
 import numpy as np
@@ -54,12 +55,15 @@ np.random.seed(SEED)
 
 import torch.optim as optim
 
+from tqdm import tqdm
+
 
 if __name__ == "__main__":
     pd = PositionDataset(datas)
     test_ds = PositionDataset(test_file)
     
     dl = DataLoader(pd, batch_size=4)
+    test_dl = DataLoader(pd, batch_size=4)
     device = "cuda:0"
     model = Model().to(device)
     optimizer = optim.AdamW(model.parameters(), lr=3e-4)
@@ -70,8 +74,20 @@ if __name__ == "__main__":
     n = 50
     print(model)
     #for i in range(n):
-    epochs = 3
+    epochs = 12
     for ep in range(epochs):
+
+        with torch.no_grad():
+            n = 0
+            avg = 0
+            for i, b in enumerate(test_dl):
+                us, them, target = b
+                target = target[:, None].to(device)
+                pred = model(us.to(device), them.to(device))
+                correct = torch.sum(pred.sigmoid().round() == target)
+                avg+=(correct-avg*pred.shape[0])/(n := n+pred.shape[0])
+                pass
+            print(f"Accuracy: {avg}")
         for i, b in enumerate(dl):
             optimizer.zero_grad()
             us, them, target = b
@@ -89,9 +105,10 @@ if __name__ == "__main__":
             t = target
             epsilon = 1e-12
             outcome_entropy = -(t * (t + epsilon).log() + (1.0 - t) * (1.0 - t + epsilon).log())
-            print(outcome_entropy)
+            #print(outcome_entropy)
 
-            print(loss.item() - outcome_entropy.mean().item())
-        print(cmb)
+            #print(loss.item() - outcome_entropy.mean().item())
+        #print(cmb)
+    torch.save(model.state_dict(), f"{base_path}/model_weights.pth")
     pass
 
